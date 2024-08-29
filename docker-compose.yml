@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  api:
+    container_name: api-node
+    image: node:20-alpine3.18
+    working_dir: /home/node/app
+    restart: always
+    command: sh -c "apk --no-cache add curl && npm install -g @nestjs/cli@10.0.0 && npm install -G dotenv-cli@7.4.2 && tail -f /dev/null"
+    volumes:
+      - .:/home/node/app
+    ports:
+      - 3001:3001
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db
+
+  db:
+    container_name: postgres-container
+    image: postgres:15
+    restart: always
+    tty: true
+    ports:
+      - 5432:5432
+    volumes:
+      - .docker/dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=aplication-db
